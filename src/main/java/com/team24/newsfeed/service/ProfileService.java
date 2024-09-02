@@ -41,7 +41,7 @@ public class ProfileService {
 
         //비밀번호 형식에 부합하는 지 확인하는 검증 로직
         if (!Pattern.matches(PASSWORD_CONDITION, updatePassword)) {
-            throw new InvalidPasswordPatternException("비밀번호 형식이 일치하지 않습니다.");
+            throw new InvalidPasswordPatternException("비밀번호는 최소 8자 이상이어야 하며, 영문자, 숫자, 특수문자를 포함해야 합니다.");
         }
 
         //변경하려는 비밀번호와 현재 비밀번호가 같은 지 확인
