@@ -1,21 +1,39 @@
 package com.team24.newsfeed.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.team24.newsfeed.dto.request.ProfileUpdateDto;
+import com.team24.newsfeed.dto.response.ProfileResponseDto;
+import com.team24.newsfeed.security.UserDetailsImpl;
+import com.team24.newsfeed.service.ProfileService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
+//@AuthenticationPrincipal UserDetailsImpl userDetailImpl
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class ProfileController {
 
-    @GetMapping("/profile/{id}")
-    public void getProfile() {
+    private final ProfileService profileService;
 
+    @GetMapping("/profile/{userId}")
+    public ResponseEntity<ProfileResponseDto> getProfile(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable("userId") Long userId
+    ) {
+        ProfileResponseDto findProfile = profileService.findProfile(userDetails, userId);
+        return ResponseEntity.ok(findProfile);
     }
 
-    @PostMapping("/profile/modify")
-    public void updatePassword() {
-
+    @PostMapping("/profile/modify-password")
+    public ResponseEntity<Void> updatePassword(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Validated @RequestBody ProfileUpdateDto updateDto
+    ) {
+        profileService.updateProfile(userDetails, updateDto);
+        return ResponseEntity.ok().build();
     }
+
 }

@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-public class PfResponseDto {
+public class ProfileResponseDto {
 
     private final String username;
     private final String email;
