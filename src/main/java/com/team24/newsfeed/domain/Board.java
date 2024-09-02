@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @Table(name = "board")
+@NoArgsConstructor
 public class Board extends Timestamped {
 
     @Id
@@ -24,8 +25,5 @@ public class Board extends Timestamped {
     private User user;
 
 
-    protected Board() {
-
-    }
 }
 
