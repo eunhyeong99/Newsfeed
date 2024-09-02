@@ -32,11 +32,4 @@ public class User extends Timestamped {
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Board> boardList = new ArrayList<>();
 
-    public User(String username, String password, String email, UserRoleEnum role) {
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.role = role;
-    }
-
 }
