@@ -39,6 +39,11 @@ public class UserController {
 
     @PostMapping("/user/signup")
     public String signup(@Valid SignupRequestDto requestDto, BindingResult bindingResult) {
+<<<<<<< HEAD
+=======
+
+        log.info(requestDto.toString());
+>>>>>>> eunhyeong
         // Validation 예외처리
         List<FieldError> fieldErrors = bindingResult.getFieldErrors();
         if(fieldErrors.size() > 0) {
