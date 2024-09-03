@@ -9,5 +9,4 @@ public class InvalidPasswordPatternException extends NewsfeedException {
     public InvalidPasswordPatternException() {
         super(INVALID_PASSWORD_PATTERN);
     }
-
 }
