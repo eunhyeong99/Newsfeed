@@ -4,14 +4,15 @@ import com.team24.newsfeed.domain.Board;
 import com.team24.newsfeed.domain.User;
 import com.team24.newsfeed.dto.request.BoardCreateDto;
 import com.team24.newsfeed.dto.request.BoardUpdateDto;
-import com.team24.newsfeed.exception.CustomException;
+import com.team24.newsfeed.exception.NewsfeedException;
 import com.team24.newsfeed.repository.BoardRepository;
 import com.team24.newsfeed.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Service
 public class BoardService {
@@ -25,7 +26,7 @@ public class BoardService {
     }
 
     public Board createFeed(Long id, BoardCreateDto boardRequestDto) {
-        User user = userRepository.findById(id).orElseThrow(() -> new CustomException("사용자를 찾을 수 없습니다."));
+        User user = userRepository.findById(id).orElseThrow(() -> new NewsfeedException("사용자를 찾을 수 없습니다."));
 
         LocalDateTime now = LocalDateTime.now();
 
@@ -40,12 +41,19 @@ public class BoardService {
         return boardRepository.save(board);
     }
 
+    public Page<Board> getFeeds(String username, Pageable pageable) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        return boardRepository.findByUserOrderByCreatedAtDesc(user, pageable);
+    }
+
     public Board updateFeed(Long id, Long user_id, BoardUpdateDto boardUpdateDto) {
         Board board = boardRepository.findById(id)
-                .orElseThrow(() -> new CustomException("게시물을 찾을 수 없습니다."));
+                .orElseThrow(() -> new NewsfeedException("게시물을 찾을 수 없습니다."));
 
         if (!board.getUser().getId().equals(user_id)) {
-            throw new CustomException("게시물 수정 권한이 없습니다.");
+            throw new NewsfeedException("게시물 수정 권한이 없습니다.");
         }
 
         board.setTitle(boardUpdateDto.getTitle());
