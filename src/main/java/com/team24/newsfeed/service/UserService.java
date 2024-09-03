@@ -1,5 +1,8 @@
 package com.team24.newsfeed.service;
 
+
+import com.team24.newsfeed.config.PasswordUtils;
+
 import com.team24.newsfeed.domain.User;
 import com.team24.newsfeed.domain.UserRoleEnum;
 import com.team24.newsfeed.dto.request.SignupRequestDto;
@@ -22,20 +25,18 @@ public class UserService {
 
     public void signup(SignupRequestDto requestDto) {
         String username = requestDto.getUsername();
-        String password = passwordEncoder.encode(requestDto.getPassword());
 
-        // 회원 중복 확인
+        // 중복된 사용자 아아디로 회원가입을 하는 경우
         Optional<User> checkUsername = userRepository.findByUsername(username);
         if (checkUsername.isPresent()) {
             throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
         }
 
-        // email 중복확인
-        String email = requestDto.getEmail();
-        Optional<User> checkEmail = userRepository.findByEmail(email);
-        if (checkEmail.isPresent()) {
-            throw new IllegalArgumentException("중복된 Email 입니다.");
+        if (!PasswordUtils.isValidPassword(requestDto.getPassword())) {
+            throw new IllegalArgumentException("비밀번호는 대소문자 영문, 숫자, 특수문자를 각각 1글자 이상 포함하고, 최소 8글자 이상이어야 합니다.");
         }
+        String password = passwordEncoder.encode(requestDto.getPassword());
+
 
         // 사용자 ROLE 확인
         UserRoleEnum role = UserRoleEnum.USER;
@@ -47,7 +48,8 @@ public class UserService {
         }
 
         // 사용자 등록
-        User user = new User(username, password, email, role);
+
+        User user = new User(username, password, role);
         userRepository.save(user);
     }
 }
