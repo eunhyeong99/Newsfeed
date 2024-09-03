@@ -8,10 +8,10 @@ import com.team24.newsfeed.exception.profile.NotSamePasswordException;
 import com.team24.newsfeed.exception.profile.SameUpdatePasswordException;
 import com.team24.newsfeed.repository.UserRepository;
 import com.team24.newsfeed.security.UserDetailsImpl;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import lombok.RequiredArgsConstructor;
 
 import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
@@ -23,7 +23,7 @@ public class ProfileService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    //비밀번호 패턴
+    //비밀번호 패턴 정규식 -> 알파벳 1개 이상, 숫자 1개 이상, 모든 기호중 1개 이상, 8자 이상
     public static final String PASSWORD_CONDITION =
             "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[\\p{P}\\p{S}])[a-zA-Z\\d\\p{P}\\p{S}]{8,}$";
 
@@ -57,11 +57,14 @@ public class ProfileService {
     //현 사용자 == 조회유저 -> 민감한 정보 가려야 하는 것인가...
     public ProfileResponseDto findProfile(UserDetailsImpl userDetailImpl, Long userId) {
 
-        //if문으로 확인 -> 본인 || 다른 사용자 -> 민감한 정보 격리수준 분리
         Long loginId = userDetailImpl.getUser().getId();
-
         User findUser = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("없는 유저입니다."));
 
-        return new ProfileResponseDto(findUser.getUsername(), findUser.getEmail(), findUser.getBoardList());
+        //if문으로 확인 -> 본인 || 다른 사용자 -> 민감한 정보 격리수준 분리
+        if (loginId.equals(userId)) {
+            return new ProfileResponseDto(findUser.getUsername(), findUser.getEmail(), findUser.getBoardList());
+        } else {
+            return new ProfileResponseDto(findUser.getUsername(), null, null);
+        }
     }
 }
