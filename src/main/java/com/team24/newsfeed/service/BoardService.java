@@ -5,6 +5,7 @@ import com.team24.newsfeed.domain.User;
 import com.team24.newsfeed.dto.request.BoardCreateDto;
 import com.team24.newsfeed.dto.request.BoardUpdateDto;
 import com.team24.newsfeed.exception.NewsfeedException;
+import com.team24.newsfeed.exception.NewsfeedExceptionConst;
 import com.team24.newsfeed.repository.BoardRepository;
 import com.team24.newsfeed.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,23 +44,27 @@ public class BoardService {
 
     public Page<Board> getFeeds(String username, Pageable pageable) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NewsfeedException(NewsfeedExceptionConst.INVALID_USER));
 
         return boardRepository.findByUserOrderByCreatedAtDesc(user, pageable);
     }
 
-    public Board updateFeed(Long id, Long user_id, BoardUpdateDto boardUpdateDto) {
-        Board board = boardRepository.findById(id)
-                .orElseThrow(() -> new NewsfeedException("게시물을 찾을 수 없습니다."));
+    public Board updateFeed(Long boardId, String username, BoardUpdateDto boardRequestDto) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new NewsfeedException(NewsfeedExceptionConst.BOARD_NOT_FOUND));
 
-        if (!board.getUser().getId().equals(user_id)) {
-            throw new NewsfeedException("게시물 수정 권한이 없습니다.");
+        if (!board.getUser().getUsername().equals(username)) {
+            throw new NewsfeedException(NewsfeedExceptionConst.UNAUTHORIZED_ACCESS);
         }
 
-        board.setTitle(boardUpdateDto.getTitle());
-        board.setContents(boardUpdateDto.getContents());
+        board.setTitle(boardRequestDto.getTitle());
+        board.setContents(boardRequestDto.getContents());
         board.setModifiedAt(LocalDateTime.now());
 
         return boardRepository.save(board);
     }
+
+    public void deleteFeed(Long id, String username) {
+    }
+
 }
