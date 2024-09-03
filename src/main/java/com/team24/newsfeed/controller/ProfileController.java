@@ -27,7 +27,7 @@ public class ProfileController {
         return ResponseEntity.ok(findProfile);
     }
 
-    @PostMapping("/profile/modify-password")
+    @PatchMapping("/profile/password")
     public ResponseEntity<Void> updatePassword(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Validated @RequestBody ProfileUpdateDto updateDto
@@ -35,5 +35,4 @@ public class ProfileController {
         profileService.updateProfile(userDetails, updateDto);
         return ResponseEntity.ok().build();
     }
-
 }
