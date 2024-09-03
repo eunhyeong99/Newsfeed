@@ -1,32 +1,31 @@
 package com.team24.newsfeed.domain;
 
 import jakarta.persistence.*;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
-@Table(name = "friend")
+@Table(name="subscribe")
 @NoArgsConstructor
-public class Subcribe extends Timestamped {
+public class Subscribe extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private boolean requsetFriend;
-    private boolean isFfriend;
+    private Long toUserId;
+    @JoinColumn(name = "fromUserId")
+    @ManyToOne(fetch = FetchType.LAZY)
+
+    private User fromUser;
 
 
-    @OneToMany
-    @JoinColumn(name = "user_id")
-    private List<User> friendList = new ArrayList<>();
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User responseUser;
+    public Subscribe(long toUserId, User fromUser) {
+        this.toUserId = toUserId;
+        this.fromUser = fromUser;
+    }
 
 
 }

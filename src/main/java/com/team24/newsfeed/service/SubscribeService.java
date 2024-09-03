@@ -1,39 +1,26 @@
 package com.team24.newsfeed.service;
 
-import com.team24.newsfeed.domain.Friend;
+
+import com.team24.newsfeed.domain.Subscribe;
 import com.team24.newsfeed.domain.User;
-import com.team24.newsfeed.repository.FriendRepository;
-import com.team24.newsfeed.repository.UserRepository;
+import com.team24.newsfeed.repository.SubscribeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class FriendService {
-    private final FriendRepository friendRepository;
-    private final UserRepository userRepository;
+public class SubscribeService {
+    private final SubscribeRepository subscribeRepository;
 
-    //친구 요청
-    /*
-    id : 현재 로그인한 유저
-    userId : 친구요청할 유저 id
-    * */
 
-    public String requestFriend(User user, Long userId) {
+    @Transactional
+    public void saveSubscribe(long toUserId, User fromUser) {
 
-        //친구 요청할 usereId
-        User responseUser = findUser(userId);
+        Subscribe subscribe = new Subscribe(toUserId, fromUser);
 
-//        Friend friend = new Friend(user, responseUser);
-//        friendRepository.save(friend);
-            user.addFriendList(userId);
+        subscribeRepository.save(subscribe);
 
-    }
-
-    private User findUser(long userId) {
-        return userRepository.findById(userId).orElseThrow(() ->
-                new IllegalArgumentException("선택한 userId는 존재하지 않습니다.")
-        );
     }
 
 
