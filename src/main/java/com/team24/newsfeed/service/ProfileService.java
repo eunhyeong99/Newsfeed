@@ -3,15 +3,15 @@ package com.team24.newsfeed.service;
 import com.team24.newsfeed.domain.User;
 import com.team24.newsfeed.dto.request.ProfileUpdateDto;
 import com.team24.newsfeed.dto.response.ProfileResponseDto;
-import com.team24.newsfeed.exception.InvalidPasswordPatternException;
-import com.team24.newsfeed.exception.NotSamePasswordException;
-import com.team24.newsfeed.exception.SameUpdatePasswordException;
+import com.team24.newsfeed.exception.profileexception.InvalidPasswordPatternException;
+import com.team24.newsfeed.exception.profileexception.NotSamePasswordException;
+import com.team24.newsfeed.exception.profileexception.SameUpdatePasswordException;
 import com.team24.newsfeed.repository.UserRepository;
 import com.team24.newsfeed.security.UserDetailsImpl;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import lombok.RequiredArgsConstructor;
 
 import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
@@ -36,17 +36,17 @@ public class ProfileService {
 
         // `찾은 유저`랑 `수정을 원하는 유저`가 입력한 비밀번호가 일치하는 지 확인
         if (!passwordEncoder.matches(currentPassword, userDetailImpl.getPassword())) {
-            throw new NotSamePasswordException("사용자 비밀번호가 일치하지 않습니다.");
+            throw new NotSamePasswordException();
         }
 
         //비밀번호 형식에 부합하는 지 확인하는 검증 로직
         if (!Pattern.matches(PASSWORD_CONDITION, updatePassword)) {
-            throw new InvalidPasswordPatternException("비밀번호는 최소 8자 이상이어야 하며, 영문자, 숫자, 특수문자를 포함해야 합니다.");
+            throw new InvalidPasswordPatternException();
         }
 
         //변경하려는 비밀번호와 현재 비밀번호가 같은 지 확인
         if (passwordEncoder.matches(updatePassword, user.getPassword())) {
-            throw new SameUpdatePasswordException("이전 비밀번호랑 같습니다.");
+            throw new SameUpdatePasswordException();
         }
         String encodePassword = passwordEncoder.encode(updatePassword);
         user.setPassword(encodePassword);
@@ -57,6 +57,7 @@ public class ProfileService {
     //현 사용자 == 조회유저 -> 민감한 정보 가려야 하는 것인가...
     public ProfileResponseDto findProfile(UserDetailsImpl userDetailImpl, Long userId) {
 
+        //if문으로 확인 -> 본인 || 다른 사용자 -> 민감한 정보 격리수준 분리
         Long loginId = userDetailImpl.getUser().getId();
 
         User findUser = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("없는 유저입니다."));
