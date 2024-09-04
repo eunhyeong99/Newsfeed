@@ -12,5 +12,5 @@ public interface SubscribeRepository extends JpaRepository<Subscribe, Long> {
 
     boolean existsByFriendIdAndUserId(Long id, long id1);
 
-    List findByUserId(long id);
+    List<Subscribe> findByUserId(long id);
 }

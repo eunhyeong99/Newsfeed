@@ -48,10 +48,10 @@ public class SubscribeController {
 
     //친구 검색
     @GetMapping("/findUsers")
-    public ResponseEntity<List> findUsers(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<List<Long>> findUsers(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         User requestUser = userDetails.getUser();
-        List users = subscribeService.findUsers(requestUser);
-        return ResponseEntity.ok().body(users);
+        List<Long> users = subscribeService.findUsers(requestUser);
+        return  ResponseEntity.ok().body(users);
     }
 
 }

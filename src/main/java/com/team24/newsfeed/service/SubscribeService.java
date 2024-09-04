@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -58,11 +59,16 @@ public class SubscribeService {
 
     }
 
-    public List findUsers(User requestUser) {
+    @Transactional
+    public List<Long> findUsers(User requestUser) {
         long id = requestUser.getId();
-        List<Long> subscribeList = subscribeRepository.findByUserId(id);
+        List<Subscribe> subscribes = subscribeRepository.findByUserId(id);
+        List<Long> frinedIds = new ArrayList<>();
+        for(Subscribe subscribe :subscribes ){
+            frinedIds.add(subscribe.getFriend().getId());
+        }
 
-       return subscribeList;
+        return frinedIds;
     }
 
     private User findUser(long userId) {
