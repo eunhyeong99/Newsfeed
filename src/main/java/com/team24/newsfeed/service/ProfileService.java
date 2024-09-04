@@ -9,6 +9,7 @@ import com.team24.newsfeed.exception.profile.SameUpdatePasswordException;
 import com.team24.newsfeed.repository.UserRepository;
 import com.team24.newsfeed.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProfileService {
@@ -31,25 +33,34 @@ public class ProfileService {
     public void updateProfile(UserDetailsImpl userDetailImpl, ProfileUpdateDto updateDto) {
         User user = userDetailImpl.getUser();
 
-        String currentPassword = updateDto.getCurrentPassword();
+        User findUser = userRepository.findById(user.getId()).orElseThrow(() -> new NoSuchElementException("없는 유저입니다."));
+
         String updatePassword = updateDto.getUpdatePassword();
+        String currentPassword = updateDto.getCurrentPassword();
 
         // `찾은 유저`랑 `수정을 원하는 유저`가 입력한 비밀번호가 일치하는 지 확인
-        if (!passwordEncoder.matches(currentPassword, userDetailImpl.getPassword())) {
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            log.info("유저 일치 예외");
             throw new NotSamePasswordException();
         }
 
         //비밀번호 형식에 부합하는 지 확인하는 검증 로직
         if (!Pattern.matches(PASSWORD_CONDITION, updatePassword)) {
-            throw new InvalidPasswordPatternException();
+            log.info("비밀번호 형식 예외");
+            throw new SameUpdatePasswordException();
+
         }
 
         //변경하려는 비밀번호와 현재 비밀번호가 같은 지 확인
         if (passwordEncoder.matches(updatePassword, user.getPassword())) {
-            throw new SameUpdatePasswordException();
+            log.info("현재 비밀번호와 같은 예외");
+            throw new InvalidPasswordPatternException();
         }
+
+        log.info("updatePassword={}", updatePassword);
         String encodePassword = passwordEncoder.encode(updatePassword);
-        user.setPassword(encodePassword);
+
+        findUser.setPassword(encodePassword);
     }
 
     //id -> 조회 하려는 id
@@ -62,9 +73,9 @@ public class ProfileService {
 
         //if문으로 확인 -> 본인 || 다른 사용자 -> 민감한 정보 격리수준 분리
         if (loginId.equals(userId)) {
-            return new ProfileResponseDto(findUser.getUsername(), findUser.getEmail(), findUser.getBoardList());
+            return new ProfileResponseDto(findUser.getUsername(), findUser.getBoardList());
         } else {
-            return new ProfileResponseDto(findUser.getUsername(), null, null);
+            return new ProfileResponseDto(findUser.getUsername(), null);
         }
     }
 }

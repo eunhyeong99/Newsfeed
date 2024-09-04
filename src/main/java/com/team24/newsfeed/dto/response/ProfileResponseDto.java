@@ -11,6 +11,5 @@ import java.util.List;
 public class ProfileResponseDto {
 
     private final String username;
-    private final String email;
     private final List<Board> boards;
 }
