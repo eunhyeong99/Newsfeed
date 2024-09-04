@@ -25,16 +25,13 @@ public class SubscribeService {
         User friend = findUser(friendId);
         long id = requestUser.getId();
 
-        //반대인 경우
-        long reveresId = requestUser.getId();
-        long reveresFriendId = friendId;
 
-        boolean alreadyExists = subscribeRepository.existsByFriendIdAndUserId(friend.getId(), id);
-        boolean reversFriend = subscribeRepository.existsByFriendIdAndUserId(reveresId, reveresFriendId);
+        boolean existsRelation = subscribeRepository.existsByFriendIdAndUserId(friend.getId(), id);
 
-        if (alreadyExists || reversFriend) {
+
+        if (existsRelation) {
             throw new DuplicateSubscribeException("이미 존재하는 친구입니다.");
-        }else{
+        } else {
             Subscribe subscribe = new Subscribe(friend, requestUser);
             subscribeRepository.save(subscribe);
         }
@@ -43,21 +40,34 @@ public class SubscribeService {
     }
 
     @Transactional
-    public void deleteSubscribe(long friendId, User requestUser) {
-        User friend = findUser(friendId);
-        long id = requestUser.getId();
-        Subscribe subscribe = subscribeRepository.findByFriendIdAndUserId(friend.getId(), id);
+    public void deleteSubscribe(long deleteFriendId, User requestUser) {
 
-        subscribeRepository.delete(subscribe);
+        User deletefriend = findUser(deleteFriendId);
+        long id = requestUser.getId();
+
+        boolean existsFriend = subscribeRepository.existsByFriendIdAndUserId(deletefriend.getId(), id);
+
+        if (existsFriend) {
+            Subscribe subscribe = subscribeRepository.findByFriendIdAndUserId(deletefriend.getId(), id);
+            subscribeRepository.delete(subscribe);
+
+        } else {
+            throw new RuntimeException("존재하지 않는 친구 입니다.");
+        }
+
+
+    }
+
+    public List findUsers(User requestUser) {
+        long id = requestUser.getId();
+        List<Long> subscribeList = subscribeRepository.findByUserId(id);
+
+       return subscribeList;
     }
 
     private User findUser(long userId) {
         return userRepository.findById(userId).orElseThrow(() ->
                 new IllegalArgumentException("선택한 userId는 존재하지 않습니다.")
         );
-    }
-
-    public List findUsers() {
-        return userRepository.findAll();
     }
 }

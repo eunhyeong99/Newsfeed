@@ -21,32 +21,36 @@ public class SubscribeController {
 
     //팔로우
     @PostMapping("/subscribe/{friendId}")
-    public ResponseEntity<String>subscribe(@PathVariable Long friendId,@AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ResponseEntity<String> subscribe(@PathVariable Long friendId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User requestUser = userDetails.getUser();
 
         try {
             subscribeService.saveSubscribe(friendId, requestUser);
-            return new ResponseEntity<>("구독완료",HttpStatus.OK);
-        }catch(DuplicateSubscribeException e){
-        return new ResponseEntity<>(e.getDetailMessage(), HttpStatus.CONFLICT);
+            return new ResponseEntity<>("구독완료", HttpStatus.OK);
+        } catch (DuplicateSubscribeException e) {
+            return new ResponseEntity<>(e.getDetailMessage(), HttpStatus.CONFLICT);
         }
     }
 
     //언팔로우
     @DeleteMapping("/subscribe/{friendId}")
-    public ResponseEntity<String> Subscribe(@PathVariable long friendId, @AuthenticationPrincipal UserDetailsImpl userDetails){
-
+    public ResponseEntity<String> Subscribe(@PathVariable long friendId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User requestUser = userDetails.getUser();
 
-        subscribeService.deleteSubscribe( friendId, requestUser);
+        try{
+            subscribeService.deleteSubscribe(friendId, requestUser);
+            return ResponseEntity.ok().body("구독해제성공");
+        }catch(RuntimeException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
 
-        return ResponseEntity.ok().body("구독해제성공");
     }
 
     //친구 검색
     @GetMapping("/findUsers")
-    public ResponseEntity<List> findUsers(){
-        List users = subscribeService.findUsers();
+    public ResponseEntity<List> findUsers(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        User requestUser = userDetails.getUser();
+        List users = subscribeService.findUsers(requestUser);
         return ResponseEntity.ok().body(users);
     }
 
