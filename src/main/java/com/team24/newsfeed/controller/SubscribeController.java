@@ -1,16 +1,15 @@
 package com.team24.newsfeed.controller;
 
 import com.team24.newsfeed.domain.User;
+import com.team24.newsfeed.exception.DuplicateSubscribeException;
 import com.team24.newsfeed.security.UserDetailsImpl;
 import com.team24.newsfeed.service.SubscribeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -25,8 +24,12 @@ public class SubscribeController {
     public ResponseEntity<String>subscribe(@PathVariable Long friendId,@AuthenticationPrincipal UserDetailsImpl userDetails){
         User requestUser = userDetails.getUser();
 
-        subscribeService.saveSubscribe(friendId, requestUser);
-        return ResponseEntity.ok().body("구독성공");
+        try {
+            subscribeService.saveSubscribe(friendId, requestUser);
+            return new ResponseEntity<>("구독완료",HttpStatus.OK);
+        }catch(DuplicateSubscribeException e){
+        return new ResponseEntity<>(e.getDetailMessage(), HttpStatus.CONFLICT);
+        }
     }
 
     //언팔로우

@@ -3,6 +3,7 @@ package com.team24.newsfeed.service;
 
 import com.team24.newsfeed.domain.Subscribe;
 import com.team24.newsfeed.domain.User;
+import com.team24.newsfeed.exception.DuplicateSubscribeException;
 import com.team24.newsfeed.repository.SubscribeRepository;
 import com.team24.newsfeed.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,17 +21,25 @@ public class SubscribeService {
 
     @Transactional
     public void saveSubscribe(long friendId, User requestUser) {
+        //내가 follow
         User friend = findUser(friendId);
         long id = requestUser.getId();
 
-        boolean alreadyExists = subscribeRepository.existsByFriendIdAndUserId(friend.getId(), id);
+        //반대인 경우
+        long reveresId = requestUser.getId();
+        long reveresFriendId = friendId;
 
-            if (alreadyExists) {
-                throw new RuntimeException("이미 존재하는 친구입니다");
-            }else {
-                Subscribe subscribe = new Subscribe(friend, requestUser);
-                subscribeRepository.save(subscribe);
-            }
+        boolean alreadyExists = subscribeRepository.existsByFriendIdAndUserId(friend.getId(), id);
+        boolean reversFriend = subscribeRepository.existsByFriendIdAndUserId(reveresId, reveresFriendId);
+
+        if (alreadyExists || reversFriend) {
+            throw new DuplicateSubscribeException("이미 존재하는 친구입니다.");
+        }else{
+            Subscribe subscribe = new Subscribe(friend, requestUser);
+            subscribeRepository.save(subscribe);
+        }
+
+
     }
 
     @Transactional
