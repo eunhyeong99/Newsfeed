@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 
+
 @Entity
 @Getter
 @Table(name="subscribe")
@@ -15,16 +16,18 @@ public class Subscribe extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long toUserId;
-    @JoinColumn(name = "fromUserId")
+    @JoinColumn(name = "friend_id", nullable=false)
     @ManyToOne(fetch = FetchType.LAZY)
+    private User friend;
 
-    private User fromUser;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable=false)
+    private User user;
 
 
-    public Subscribe(long toUserId, User fromUser) {
-        this.toUserId = toUserId;
-        this.fromUser = fromUser;
+    public Subscribe(User friend, User user) {
+        this.friend = friend;
+        this.user = user;
     }
 
 

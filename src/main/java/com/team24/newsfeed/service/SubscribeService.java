@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class SubscribeService {
@@ -17,21 +19,27 @@ public class SubscribeService {
 
 
     @Transactional
-    public void saveSubscribe(long toUserId, User fromUser) {
-        User user = findUser(toUserId);
-        long userId = user.getId();
+    public void saveSubscribe(long friendId, User requestUser) {
+        User friend = findUser(friendId);
+        long id = requestUser.getId();
 
-        Subscribe subscribe = new Subscribe(userId, fromUser);
+        boolean alreadyExists = subscribeRepository.existsByFriendIdAndUserId(friend.getId(), id);
 
-        subscribeRepository.save(subscribe);
+            if (alreadyExists) {
+                throw new RuntimeException("이미 존재하는 친구입니다");
+            }else {
+                Subscribe subscribe = new Subscribe(friend, requestUser);
+                subscribeRepository.save(subscribe);
+            }
     }
 
     @Transactional
-    public void deleteSubscribe(long toUserId, User fromUser) {
-        User user = findUser(toUserId);
-        long userId = user.getId();
-        subscribeRepository.delete(userId, fromUser);
+    public void deleteSubscribe(long friendId, User requestUser) {
+        User friend = findUser(friendId);
+        long id = requestUser.getId();
+        Subscribe subscribe = subscribeRepository.findByFriendIdAndUserId(friend.getId(), id);
 
+        subscribeRepository.delete(subscribe);
     }
 
     private User findUser(long userId) {
@@ -40,4 +48,7 @@ public class SubscribeService {
         );
     }
 
+    public List findUsers() {
+        return userRepository.findAll();
+    }
 }

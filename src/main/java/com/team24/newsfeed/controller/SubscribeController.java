@@ -1,42 +1,50 @@
 package com.team24.newsfeed.controller;
 
 import com.team24.newsfeed.domain.User;
+import com.team24.newsfeed.security.UserDetailsImpl;
 import com.team24.newsfeed.service.SubscribeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/subscribe")
+@RequestMapping("/api")
 public class SubscribeController {
 
     private final SubscribeService subscribeService;
 
-    @PostMapping("/{toUserId}")
-    public ResponseEntity<String> subscribe(@PathVariable int toUserId){
+    //팔로우
+    @PostMapping("/subscribe/{friendId}")
+    public ResponseEntity<String>subscribe(@PathVariable Long friendId,@AuthenticationPrincipal UserDetailsImpl userDetails){
+        User requestUser = userDetails.getUser();
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User fromUser = (User) authentication.getPrincipal();
-
-        subscribeService.saveSubscribe(toUserId, fromUser);
+        subscribeService.saveSubscribe(friendId, requestUser);
         return ResponseEntity.ok().body("구독성공");
     }
 
-    @DeleteMapping("/{toUserId}")
-    public ResponseEntity<String> unSubscribe(@PathVariable int toUserId){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User fromUser = (User) authentication.getPrincipal();
+    //언팔로우
+    @DeleteMapping("/subscribe/{friendId}")
+    public ResponseEntity<String> Subscribe(@PathVariable long friendId, @AuthenticationPrincipal UserDetailsImpl userDetails){
 
-        subscribeService.deleteSubscribe(toUserId, fromUser);
+        User requestUser = userDetails.getUser();
+
+        subscribeService.deleteSubscribe( friendId, requestUser);
 
         return ResponseEntity.ok().body("구독해제성공");
-
-
     }
 
-
+    //친구 검색
+    @GetMapping("/findUsers")
+    public ResponseEntity<List> findUsers(){
+        List users = subscribeService.findUsers();
+        return ResponseEntity.ok().body(users);
+    }
 
 }
