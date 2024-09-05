@@ -11,6 +11,7 @@ import com.team24.newsfeed.exception.NewsfeedExceptionConst;
 import com.team24.newsfeed.repository.BoardRepository;
 import com.team24.newsfeed.repository.SubscribeRepository;
 import com.team24.newsfeed.repository.UserRepository;
+import org.hibernate.mapping.Subclass;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -58,11 +59,12 @@ public class BoardService {
 
 
         // Get the list of users this user has subscribed to
-        List<Subscribe> subscriptions = subscribeRepository.findByFriend(user);
+        List<Board> subscriptions = subscribeRepository. findBoardsByUserFriends(user.getId());
+        System.out.println(subscriptions);
 
         // Collect all subscribed users
         List<User> subscribedUsers = subscriptions.stream()
-                .map(Subscribe::getFriend)
+                .map(Board::getUser)
                 .collect(Collectors.toList());
 
 
