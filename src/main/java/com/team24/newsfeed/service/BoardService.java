@@ -5,6 +5,7 @@ import com.team24.newsfeed.domain.Subscribe;
 import com.team24.newsfeed.domain.User;
 import com.team24.newsfeed.dto.request.BoardCreateDto;
 import com.team24.newsfeed.dto.request.BoardUpdateDto;
+import com.team24.newsfeed.exception.CustomException;
 import com.team24.newsfeed.exception.NewsfeedException;
 import com.team24.newsfeed.exception.NewsfeedExceptionConst;
 import com.team24.newsfeed.repository.BoardRepository;
@@ -75,12 +76,13 @@ public class BoardService {
                 .orElseThrow(() -> new NewsfeedException(NewsfeedExceptionConst.BOARD_NOT_FOUND));
 
         // 게시물 작성자와 수정 요청자 비교 (권한 체크)
-        if (!board.getUser().getId().equals(user_id)) {
-            throw new CustomException("게시물 수정 권한이 없습니다.");
+        if (!board.getUser().getId().equals(id)) {
+            throw new CustomException();
+        }
 
 
-        board.setTitle(boardUpdateDto.getTitle());
-        board.setContents(boardUpdateDto.getContents());
+        board.setTitle(boardRequestDto.getTitle());
+        board.setContents(boardRequestDto.getContents());
         board.setModifiedAt(LocalDateTime.now());
 
         return boardRepository.save(board);
