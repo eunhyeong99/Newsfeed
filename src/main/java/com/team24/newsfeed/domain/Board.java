@@ -43,5 +43,6 @@ public class Board extends Timestamped {
         this.modifiedAt = modifiedAt;
     }
 
+
 }
 
