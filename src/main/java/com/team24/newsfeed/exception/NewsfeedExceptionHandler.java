@@ -13,3 +13,4 @@ public class NewsfeedExceptionHandler {
         return new ResponseEntity<>(new ErrorResult(e.getMessage()), e.getHttpStatus());
     }
 }
+

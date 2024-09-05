@@ -9,3 +9,4 @@ public class ErrorResult {
 
     private final String message;
 }
+

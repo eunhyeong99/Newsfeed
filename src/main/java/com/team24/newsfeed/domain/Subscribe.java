@@ -30,5 +30,5 @@ public class Subscribe extends Timestamped {
         this.user = user;
     }
 
-
 }
+

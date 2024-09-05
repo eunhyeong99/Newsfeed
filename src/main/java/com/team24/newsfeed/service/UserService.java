@@ -54,7 +54,7 @@ public class UserService {
     }
 
     public void deleteUser(Long id, UserDetailsImpl userDetails) {
-         User newUser = userRepository.findById(id).orElseThrow(()->new IllegalArgumentException(id+"가 존재하지 않습니다."));
+        User newUser = userRepository.findById(id).orElseThrow(()->new IllegalArgumentException(id+"가 존재하지 않습니다."));
 
 
         if (userDetails.getUsername().equals(newUser.getUsername()) && passwordEncoder.matches(userDetails.getPassword(), newUser.getPassword())) {
@@ -63,7 +63,7 @@ public class UserService {
             throw new IllegalArgumentException("비밀번호 또는 아이디가 일치하지 않습니다.");
         }
 
-         userRepository.delete(newUser);
+        userRepository.delete(newUser);
     }
 
 }
