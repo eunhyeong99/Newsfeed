@@ -7,6 +7,7 @@ import com.team24.newsfeed.dto.request.BoardUpdateDto;
 import com.team24.newsfeed.service.BoardService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -41,6 +42,7 @@ public class BoardController {
         Board updatedBoard = boardService.updateFeed(id, user.getId(), boardUpdateDto);
         return ResponseEntity.ok(updatedBoard);
     }
+
 
     // 게시물 삭제
     @DeleteMapping("/{feedId}")

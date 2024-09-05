@@ -48,6 +48,8 @@ public class BoardService {
         if (!board.getUser().getId().equals(user_id)) {
             throw new CustomException("게시물 수정 권한이 없습니다.");
 
+        if (!board.getUser().getId().equals(user_id)) {
+            throw new CustomException("게시물 수정 권한이 없습니다.");
         }
 
         board.setTitle(boardUpdateDto.getTitle());
@@ -75,4 +77,6 @@ public class BoardService {
         return boardRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable);
     }
 
+        return boardRepository.save(board);
+    }
 }
