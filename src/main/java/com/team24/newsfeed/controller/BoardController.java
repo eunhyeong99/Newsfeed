@@ -31,7 +31,7 @@ public class BoardController {
 
         // UserDetailsImpl로 캐스팅하여 사용자 정보를 가져옴
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        User user = userDetails.getUser();  // User 객체를 가져옴
+        User user = userDetails.getUser();  // User 객체를 가져옴 !
 
         // 게시물 생성
         Board createdBoard = boardService.createFeed(user.getId(), boardCreateDto);
