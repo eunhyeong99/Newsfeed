@@ -3,12 +3,14 @@ package com.team24.newsfeed.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @Table(name = "users")
 public class User extends Timestamped {
@@ -22,8 +24,6 @@ public class User extends Timestamped {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false, unique = true)
-    private String email;
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
@@ -32,4 +32,10 @@ public class User extends Timestamped {
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Board> boardList = new ArrayList<>();
 
+
+    public User(String username, String password,  UserRoleEnum role) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+    }
 }

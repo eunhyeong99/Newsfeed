@@ -12,10 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,7 +25,8 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/user/login-page")
-    public String loginPage() {
+    public String loginPage(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+
         return "login";
     }
 
@@ -39,6 +37,7 @@ public class UserController {
 
     @PostMapping("/user/signup")
     public String signup(@Valid SignupRequestDto requestDto, BindingResult bindingResult) {
+
         // Validation 예외처리
         List<FieldError> fieldErrors = bindingResult.getFieldErrors();
         if(fieldErrors.size() > 0) {
@@ -62,5 +61,13 @@ public class UserController {
         boolean isAdmin = (role == UserRoleEnum.ADMIN);
 
         return new UserInfoDto(username, isAdmin);
+    }
+
+    @DeleteMapping("/user/{id}")
+    public String deleteUser(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        userService.deleteUser(id,userDetails);
+
+        return "redirect:/api/user/login-page";
     }
 }
