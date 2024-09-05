@@ -71,15 +71,10 @@ public class BoardService {
         return boardRepository.findByUserInOrderByCreatedAtDesc(subscribedUsers, pageable);
     }
 
-    public Board updateFeed(Long id, String username, BoardUpdateDto boardRequestDto) {
+    public Board updateFeed(Long id,  BoardUpdateDto boardRequestDto) {
+
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new NewsfeedException(NewsfeedExceptionConst.BOARD_NOT_FOUND));
-
-        // 게시물 작성자와 수정 요청자 비교 (권한 체크)
-        if (!board.getUser().getId().equals(id)) {
-            throw new CustomException();
-        }
-
 
         board.setTitle(boardRequestDto.getTitle());
         board.setContents(boardRequestDto.getContents());

@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,22 +56,23 @@ public class BoardController {
 
     // 게시물 수정
     @PutMapping("/{board_id}")
-    public ResponseEntity<Board> updateFeed(@PathVariable Long board_id, @RequestBody BoardUpdateDto boardRequestDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        Board updatedBoard = boardService.updateFeed(board_id, username, boardRequestDto);
+    public ResponseEntity<Board> updateFeed(@PathVariable Long board_id,
+                                            @RequestBody BoardUpdateDto boardRequestDto
+    ) {
+
+        Board updatedBoard = boardService.updateFeed(board_id, boardRequestDto);
         return ResponseEntity.ok(updatedBoard);
     }
 
     // 게시물 삭제
     @DeleteMapping("/{feedId}")
-    public ResponseEntity<Void> deleteFeed(@PathVariable Long feedId) {
-        // 현재 인증된 사용자 정보 가져오기
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) authentication.getPrincipal();
+    public ResponseEntity<Void> deleteFeed(@PathVariable Long feedId,
+                                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        User user = userDetails.getUser();
 
         // 서비스 메서드를 통해 게시물 삭제
-        boardService.deleteFeed(feedId, user.getId().toString());
+        boardService.deleteFeed(feedId, user.getUsername());
         return ResponseEntity.noContent().build();  // 삭제 성공 시 204 No Content 응답
     }
 
