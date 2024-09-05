@@ -1,5 +1,6 @@
 package com.team24.newsfeed.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,6 +27,7 @@ public class Board extends Timestamped {
     @Column(nullable = false)
     private String contents;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
