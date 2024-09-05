@@ -74,12 +74,13 @@ public class BoardService {
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new NewsfeedException(NewsfeedExceptionConst.BOARD_NOT_FOUND));
 
-        if (!board.getUser().getUsername().equals(username)) {
-            throw new NewsfeedException(NewsfeedExceptionConst.UNAUTHORIZED_ACCESS);
-        }
+        // 게시물 작성자와 수정 요청자 비교 (권한 체크)
+        if (!board.getUser().getId().equals(user_id)) {
+            throw new CustomException("게시물 수정 권한이 없습니다.");
 
-        board.setTitle(boardRequestDto.getTitle());
-        board.setContents(boardRequestDto.getContents());
+
+        board.setTitle(boardUpdateDto.getTitle());
+        board.setContents(boardUpdateDto.getContents());
         board.setModifiedAt(LocalDateTime.now());
 
         return boardRepository.save(board);

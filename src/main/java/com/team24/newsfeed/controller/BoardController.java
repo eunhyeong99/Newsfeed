@@ -18,10 +18,13 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/feeds")
 public class BoardController {
     private final BoardService boardService;
+
+    public BoardController(BoardService boardService) {
+        this.boardService = boardService;
+    }
 
 
     // 게시물 작성
@@ -37,7 +40,6 @@ public class BoardController {
         Board createdBoard = boardService.createFeed(user.getId(), boardCreateDto);
 
         return ResponseEntity.ok(createdBoard);
-
     }
 
 
@@ -61,11 +63,28 @@ public class BoardController {
     }
 
     // 게시물 삭제
-    @DeleteMapping("/{board_id}")
-    public ResponseEntity<String> deleteFeed(@PathVariable Long board_id) {
+    @DeleteMapping("/{feedId}")
+    public ResponseEntity<Void> deleteFeed(@PathVariable Long feedId) {
+        // 현재 인증된 사용자 정보 가져오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        boardService.deleteFeed(board_id, username);
-        return ResponseEntity.ok("게시물이 성공적으로 삭제되었습니다.");
+        User user = (User) authentication.getPrincipal();
+
+        // 서비스 메서드를 통해 게시물 삭제
+        boardService.deleteFeed(feedId, user.getId());
+        return ResponseEntity.noContent().build();  // 삭제 성공 시 204 No Content 응답
     }
+
+    // 뉴스피드 조회 (본인의 게시물만 조회)
+    @GetMapping
+    public ResponseEntity<Page<Board>> getMyFeeds(Pageable pageable) {
+        // 현재 인증된 사용자 정보 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
+
+        // 본인의 게시물만 조회, 최신순 내림차순 정렬 및 페이지네이션 적용
+        Page<Board> feeds = boardService.getFeedsByUser(user.getId(), pageable);
+        return ResponseEntity.ok(feeds);
+    }
+
+
 }
