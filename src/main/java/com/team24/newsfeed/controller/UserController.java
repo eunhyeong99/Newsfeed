@@ -64,9 +64,9 @@ public class UserController {
     }
 
     @DeleteMapping("/user/{id}")
-    public String deleteUser(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public String deleteUser(@PathVariable Long id, @RequestParam String password) {
 
-        userService.deleteUser(id,userDetails);
+        userService.deleteUser(id,password);
 
         return "redirect:/api/user/login-page";
     }

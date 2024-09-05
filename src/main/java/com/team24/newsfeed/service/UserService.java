@@ -53,17 +53,18 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void deleteUser(Long id, UserDetailsImpl userDetails) {
+    public void deleteUser(Long id, String password) {
+
         User newUser = userRepository.findById(id).orElseThrow(()->new IllegalArgumentException(id+"가 존재하지 않습니다."));
-
-
-        if (userDetails.getUsername().equals(newUser.getUsername()) && passwordEncoder.matches(userDetails.getPassword(), newUser.getPassword())) {
+        // 입력받은 비밀번호가 암호화된 비밀번호와 일치하는지 확인
+        if (passwordEncoder.matches(password, newUser.getPassword())) {
+            // 비밀번호가 일치하면 삭제
             userRepository.delete(newUser);
         } else {
-            throw new IllegalArgumentException("비밀번호 또는 아이디가 일치하지 않습니다.");
+            // 비밀번호가 일치하지 않으면 예외 던짐
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
         userRepository.delete(newUser);
     }
-
 }

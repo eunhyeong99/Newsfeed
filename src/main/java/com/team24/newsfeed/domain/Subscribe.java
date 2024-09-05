@@ -29,6 +29,5 @@ public class Subscribe extends Timestamped {
         this.friend = friend;
         this.user = user;
     }
-
 }
 

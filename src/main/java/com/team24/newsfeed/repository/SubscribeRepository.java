@@ -14,8 +14,7 @@ public interface SubscribeRepository extends JpaRepository<Subscribe, Long> {
 
 
     List<Subscribe> findByUserId(long id);
-    // 사용자 기준으로 구독 정보 조회
-    List<Subscribe> findByUser(User user);
 
+    // 사용자 기준으로 구독 정보 조회
     List<Subscribe> findByFriend(User friend);
 }

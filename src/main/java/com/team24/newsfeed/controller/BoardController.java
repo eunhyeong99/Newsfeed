@@ -46,9 +46,11 @@ public class BoardController {
 
     // 자신의 게시물 조회 (페이징 처리)
     @GetMapping()
-    public ResponseEntity<Page<Board>> getFeeds(@RequestParam(defaultValue = "0") int page) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
+    public ResponseEntity<Page<Board>> getFeeds(@RequestParam(defaultValue = "0" )
+                                                @AuthenticationPrincipal UserDetailsImpl userDetails, int page) {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        String username = authentication.getName();
+        String username  = userDetails.getUsername();
         Pageable pageable = PageRequest.of(page, 10);
         Page<Board> boards = boardService.getFeeds(username, pageable);
         return ResponseEntity.ok(boards);

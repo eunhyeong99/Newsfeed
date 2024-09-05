@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,14 +56,15 @@ public class BoardService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
+
         // Get the list of users this user has subscribed to
         List<Subscribe> subscriptions = subscribeRepository.findByFriend(user);
 
         // Collect all subscribed users
         List<User> subscribedUsers = subscriptions.stream()
-                .map(sub -> userRepository.findById(sub.getFriend().getId()).orElseThrow(
-                        () -> new IllegalArgumentException("구독한 사용자가 존재하지 않습니다.")))
+                .map(Subscribe::getFriend)
                 .collect(Collectors.toList());
+
 
         // Add the current user to the list of subscribed users
         subscribedUsers.add(user);
