@@ -72,6 +72,7 @@ public class BoardService {
 
     public Page<Board> getFeedsByUser(Long userId, Pageable pageable) {
         // 사용자 ID에 해당하는 게시물을 생성일 기준 내림차순으로 페이징 처리하여 조회
+
         return boardRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable);
     }
 }
