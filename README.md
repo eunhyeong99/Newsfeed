@@ -4,6 +4,9 @@
 ## API
 <img width="755" alt="스크린샷 2024-09-06 오전 10 30 21" src="https://github.com/user-attachments/assets/3d0f4c4a-b1af-4725-8813-ab243f13dded">
 
+## 와이어 프레임
+<img width="720" alt="스크린샷 2024-09-06 오전 10 55 03" src="https://github.com/user-attachments/assets/694741af-59af-407f-bbdc-bdc01aa7a65e">
+
 
 ## 트러블슈팅
 ### 1. 양방향 관계설정으로 인한 순환참조 오류
